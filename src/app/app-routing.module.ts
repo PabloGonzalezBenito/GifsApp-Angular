@@ -5,23 +5,26 @@ import { AboutPageComponent } from './shared/pages/about-page/about-page.compone
 import { ContactPageComponent } from './shared/pages/contact-page/contact-page.component';
 
 const routes: Routes = [
+  // {
+  //   path: '',
+  //   component: HomePageComponent,
+  // },
   {
-    path: '',
-    component: HomePageComponent,
-  }, {
     path: 'about',
     component: AboutPageComponent
   }, {
     path: 'contact',
     component: ContactPageComponent
-  },  {
+  }, {
+    //cargamos las rutas hijas de la aplicacion
+    //mediante lazyload
     path: 'countries',
-    component: ContactPageComponent
+    loadChildren: () => import(/*la ruta del modulo donde se encuentra el router child*/'./countries/countries.module').then(module => module.CountriesModule)
   },
-    {
+  {
     //Cualquier path que no este definido en mi router me redirige al home
     path: '**',
-    redirectTo: ''
+    redirectTo: 'countries'
   },
 
 ];
