@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+<body class="text-bg-dark d-flex flex-row  justify-content-evenly">
+
+    <form class="my-5 text-bg-light p-4 rounded-top" id="formEntrada">
+        <h1>Formulario de Entrada de Datos</h1>
+        <h3>Introduce los datos para crear un nuevo alumno</h3>
+        <label for="id">ID: </label>
+        <input type="number" class="form-control w-50" id="IDE">
+        <br><br>
+
+        <label for="nombre">Nombre: </label>
+        <input type="text" class="form-control w-50" id="nombreE">
+        <br><br>
+
+        <!-- CORRECCION: se añade el atributo "step" en los inputs de las notas para que se nos permita introducir notas con hasta 2 decimales -->
+        <label for="practicas">Nota de Prácticas: </label>
+        <input type="number" step="0.01" class="form-control w-50" id="practicasE">
+        <br><br>
+
+        <label for="examen">Nota de Examen: </label>
+        <input type="number" step="0.01" class="form-control w-50" id="examenE">
+        <br><br>
+
+        <input type="submit" class="btn btn-info" value="Guardar Datos">
+    </form>
+
+    <form class="text-bg-light p-4 mt-5 rounded-top" id="formSalida">
+        <h1>Formulario de Salida de Datos</h1>
+        <h3>Introduce una ID para mostrar los datos del alumno</h3>
+        <label for="id">ID: </label>
+        <input type="number" class="form-control w-50" id="IDS">
+        <br><br>
+
+        <label for="id">Nombre: </label>
+        <input type="text" class="form-control w-50" id="nombreS" disabled>
+        <br><br>
+
+        <label for="practicas">Nota de Prácticas: </label>
+        <input type="number" class="form-control w-50" id="practicasS" disabled>
+        <br><br>
+
+        <label for="examen">Nota de Examen: </label>
+        <input type="number" class="form-control w-50" id="examenS" disabled>
+        <br><br>
+
+        <label for="examen">Nota Media: </label>
+        <input type="number" class="form-control w-50" id="media" disabled>
+        <br><br>
+
+        <input type="submit" class="btn btn-success" value="Mostrar Datos">
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+
+    <script>
+        //Defino la clase Colegio con su constructor
+        class Colegio {
+            constructor(nombre, numeroAulas, numeroAlumnos) {
+                this.nombre = nombre;
+                this.numeroAulas = numeroAulas;
+                this.numeroAlumnos = numeroAlumnos;
+            }
+        }
+
+        //Defino la clase Alumno con su constructor y sus métodos
+        class Alumno {
+            constructor(nombre, practicas, teoria, id) {
+                this.nombre = nombre;
+                this.practicas = practicas;
+                this.teoria = teoria;
+                this.notaMedia = this.calcularNotaMedia(this.practicas, this.teoria);
+                this.id = id;
+            }
+
+            getNombre() {
+                return this.nombre;
+            }
+
+            setNombre(nombre) {
+                this.nombre = nombre;
+            }
+
+            getnotaMedia() {
+                return this.notaMedia;
+            }
+
+            calcularNotaMedia(notaPracticas, notaExamen) {
+                return notaPracticas * 0.5 + notaExamen * 0.5;
+            }
+
+            setnotaMedia(nuevaNotaMedia) {
+                this.notaMedia = nuevaNotaMedia;
+            }
+        }
+        /*
+        introducir algun alumno en el array
+        notas deben permitir decimales
+        error si se busca una id que no existe
+        ENVIAR MODIFICACIONES AL CORREO A DAVID
+        */
+
+
+        //Inicializo el array que contendrá los objetos de tipo Alumno
+        let alumnos = [];
+
+        /*
+        CORRECCION: creo algunos alumnos y los introduzco en el array de alumnos
+        */
+
+        const alumno1 = new Alumno('Conrad', 5.5, 7.35, 1);
+        const alumno2 = new Alumno('Darnoc', 4.5, 6.85, 2);
+        const alumno3 = new Alumno('Constantin', 8.5, 3.2, 3);
+
+        alumnos = [...alumnos, alumno1, alumno2, alumno3];
+
+
+        const formularioE = document.querySelector('#formEntrada');
+        formularioE.addEventListener('submit', agregarAlumno);
+
+        const formularioS = document.querySelector('#formSalida');
+        formularioS.addEventListener('submit', mostrarAlumno);
+
+        function agregarAlumno(event) {
+            event.preventDefault();
+            let id = document.querySelector('#IDE');
+            let nombre = document.querySelector('#nombreE');
+            let practicas = document.querySelector('#practicasE');
+            let examen = document.querySelector('#examenE');
+
+            if (id.value !== '' && nombre.value !== '' && practicas.value !== '' && examen.value !== '') {
+                if (alumnos.some(alumno => alumno.id == id.value)) {
+
+                    //Utilizamos SweetAlert para mostrar una alerta de error
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: 'Ya existe un alumno con esa ID',
+                    });
+                    //alert('ERROR: Ya existe un alumno con esa ID');
+                    return;
+                }
+                //Utilizamos SweetAlert para mostrar una alerta de error
+                Swal.fire({
+                    icon: "success",
+                    title: "Alumno Creado",
+                    text: 'Se añade el nuevo alumno al listado de alumnos',
+                });
+                //alert('Se añade el nuevo alumno al listado de alumnos');
+                alumnos.push(new Alumno(nombre.value, +practicas.value, +examen.value, +id.value));
+                console.log(nombre.value, +practicas.value, +examen.value, +id.value);
+                //CORRECCION: si el alumno se agrega correctamente, se vacía el formulario
+                nombre.value = "";
+                practicas.value = "";
+                examen.value = "";
+                id.value = "";
+            } else { //Si hay algún campo del formulario vacío
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: 'Se deben rellenar todos los campos para agregar un nuevo alumno',
+                });
+            }
+        }
+
+        function mostrarAlumno(event) {
+            event.preventDefault();
+            let id = document.querySelector('#IDS');
+            let nombre = document.querySelector('#nombreS');
+            let practicas = document.querySelector('#practicasS');
+            let examen = document.querySelector('#examenS');
+            let media = document.querySelector('#media');
+
+            let alumnoAMostrar = alumnos.filter(alumno => alumno.id == id.value);
+            /*
+            CORRECCION: Si el array de alumnos a mostrar tiene una longitud de 0 
+            (es decir, no se ha encontrado ningún alumno con la id introducida)
+            se da un aviso al usuario y se termina de ejecutar esta función
+            */
+            if(id.value.trim() === ''){
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: 'Introduce una ID para mostrar la información del alumno asociado',
+                });
+                return;
+            }
+
+            if (!alumnoAMostrar.length) {
+                //Utilizamos SweetAlert para mostrar una alerta de error
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: 'No se ha encontrado ningun alumno con la ID introducida',
+                });
+                //alert('No se ha encontrado ningun alumno con la ID introducida');
+                return;
+            }
+
+            nombre.value = alumnoAMostrar[0].nombre;
+            practicas.value = alumnoAMostrar[0].practicas;
+            examen.value = alumnoAMostrar[0].teoria;
+            media.value = alumnoAMostrar[0].notaMedia;
+
+        }
+
+    </script>
+</body>
+
+</html>
